@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "outDir": "built/",
+        "sourceMap": true,
+        "target": "es5"
+    },
+    "files": [
+        "angular-async-validator.ts"
+    ]
+}

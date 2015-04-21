@@ -1,0 +1,34 @@
+{
+  "name": "angular-async-validator",
+  "version": "0.0.1",
+  "description": "This module enables you to register your own validation rules, or overwrite existing ones. Makes every validation 'promise based', so it can deal with both synchronous  and asynchronous validations. Also, sometimes you want validate an entire form when a model changes, which currently there are no good ways to do this, hence this module, because validation and form manipulation in Angular 1.x is a pain by itself.",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start tests/karma.conf.js",
+    "compile": "tsc --noImplicitAny --module commonjs typings/tsd.d.ts angular-async-validator.ts"
+  },
+  "devDependencies": {
+    "karma": "^0.12.31",
+    "karma-coverage": "^0.3.1",
+    "karma-mocha": "0.x"
+  },
+  "keywords": [
+    "angular",
+    "validation",
+    "validator",
+    "asynchronous",
+    "async",
+    "directive",
+    "module"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocesar/angular-async-validator.git"
+  },
+  "author": "Paulo Cesar <https://github.com/pocesar>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pocesar/angular-async-validator/issues"
+  },
+  "homepage": "https://github.com/pocesar/angular-async-validator"
+}

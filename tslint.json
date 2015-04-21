@@ -1,0 +1,28 @@
+{
+  "rules": {
+    "indent": [true, 4],
+    "curly": true,
+    "jsdoc-format": true,
+    "no-arg": true,
+    "no-construct": true,
+    "quotemark": [true, "single"],
+    "semicolon": true,
+    "no-use-before-declare": true,
+    "no-unreachable": true,
+    "no-trailing-whitespace": true,
+    "no-trailing-comma": true,
+    "no-eval": true,
+    "no-empty": false,
+    "no-duplicate-variable": true,
+    "no-duplicate-key": true,
+    "label-undefined": true,
+    "interface-name": true,
+    "class-name": true,
+    "triple-equals": [true, "allow-null-check"],
+    "use-strict": [true,
+      "check-module",
+      "check-function"
+    ],
+    "variable-name": [false, "allow-leading-underscore"]
+  }
+}
