@@ -6,7 +6,9 @@ validation and form manipulation in Angular 1.x is a pain by itself.
 
 Provides no validation functions out-of-the-box. You may reuse the ones from Angular without a problem. 
 
-Requires Angular 1.3+
+Code was based off [ui-validate](http://angular-ui.github.io/ui-utils/#/validate) initially, but it's too simple and lagging behind still using $parsers and $formatters since it need to retain 1.2 compatibility.
+
+This module requires Angular 1.3+
 
 ## Motivation
 
@@ -74,7 +76,7 @@ angular.module('yourapp', [
 
   AsyncValidator.run('name', 'Validate this string', { inlineOptions: true }).then(function(currentValidValue){
     // worked
-    currentValidValue
+    currentValidValue === 'Validate this string'
   }, function(){
     // failed
     
@@ -94,6 +96,8 @@ angular.module('yourapp', [
       value: '2',
       ok: 'ok'  
   };
+  
+  this.hasChanged = false;
 }]);
 ```
 
@@ -105,14 +109,19 @@ Use it in your HTML input ng-models (notice they are all expressions, therefore 
    <input async-validator="'$model.$modelValue.length > 3'" ng-model="ctrl.data.n2" type="text">
    <input async-validator="'nome'" ng-model="ctrl.data.n3" type="text">
    <input async-validator="{ custom: 'ctrl.controllerValidation($value)' }" ng-model="ctrl.data.n4" type="text">
-   <input async-validator="{ inline: '$value != ok && !$error.required' }" required ng-model="ctrl.data.n5" type="text" >
-   <input async-validator="'$model.$viewValue != ctrl.data.value'" ng-model="data.n6" type="text">
+   <input async-validator="{ inline: '$value != ctrl.data.ok && !$error.required' }" required ng-model="ctrl.data.n5" type="text" >
 </div>
+```
+
+The helper attribute `async-validator-watch` can watch an expression. If it changes (regardless if truthy or falsy) will trigger the `$validate()` call on the ngModel
+
+```html
+   <input async-validator-watch="'ctrl.hasChanged'" async-validator="'$model.$viewValue != ctrl.data.value'" ng-model="data.n6" type="text">
 ```
 
 Locals available:
 
-* `$value` current `$modelValue`, might be undefined
+* `$value` current `$modelValue`, might be undefined / NaN
 * `$error` current `$error` in the underlaying ng-model
 * `$model` current ng-model exposed
 
