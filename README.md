@@ -116,6 +116,15 @@ Use it in your form once and apply the same validation to all underlaying models
 </form>
 ```
 
+## Options
+
+When registering a validator, you can pass your own options to it using the third parameter as an object and setting the `options` member. 
+
+* `valueFrom` where to get the current value. Defaults to `undefined`, and passes the whole ngModelController to the validator function as the first parameter
+* `options` any options that the validator function receives as the second parameter, defaults to `{}`
+* `overwrite` if you set to false, it will throw if there's another validator with same name, defaults to `true`
+* `removeSync` will not remove synchronous validators if they have the same name, defaults to `false` (removes validators with same name)
+
 ## License
 
 MIT
