@@ -126,6 +126,7 @@ Locals available:
 * `$value` current `$modelValue`, might be undefined / NaN
 * `$error` current `$error` in the underlaying ng-model
 * `$model` current ng-model exposed
+* `$options` current merged `async-validation-options-*`
 
 Use it in your form once and apply the same validation to all underlaying models (must name your inputs or manually add them using `async-validator-add`):
 
