@@ -124,6 +124,7 @@ When registering a validator, you can pass your own options to it using the thir
 * `options` any options that the validator function receives as the second parameter, defaults to `{}`
 * `overwrite` if you set to false, it will throw if there's another validator with same name, defaults to `true`
 * `removeSync` will not remove synchronous validators if they have the same name, defaults to `false` (removes validators with same name)
+* `silentRejection` if sets to false, will rethrow the error. will turn any throws and rejections into an "invalid" validation, defaults to true. 
 
 ## License
 
