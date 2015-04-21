@@ -115,7 +115,7 @@ describe('AsyncValidator', function () {
                 return AsyncValidator.run('wontcrash', 'test');
             })
             .catch(function(err){
-                expect(err).to.match(/nope is not defined/);
+                expect(err).to.match(/nope/);
                 done();
             });
 
