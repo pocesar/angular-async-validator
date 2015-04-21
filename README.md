@@ -84,7 +84,16 @@ angular.module('yourapp', [
      return $value === 'asdf';
   };
   
-  this.data = {};
+  this.data = {
+      n1: 'asdf',
+      n2: '1234',
+      n3: 'fsa',
+      n4: 'fda',
+      n5: 'fda',
+      n6: 'ds',
+      value: '2',
+      ok: 'ok'  
+  };
 }]);
 ```
 
@@ -92,12 +101,12 @@ Use it in your HTML input ng-models (notice they are all expressions, therefore 
 
 ```html
 <div ng-controller="Ctrl as ctrl">
-  <input async-validator="{ required: 'required' }" ng-model="ctrl.data.1" type="text">
-  <input async-validator="'$model.$modelValue.length > 10'" ng-model="ctrl.data.2" type="text">
-  <input async-validator="'usingValidateJs'" ng-model="ctrl.data.3" type="text">
-  <input async-validator="{ custom: 'ctrl.controllerValidation($value)' }" ng-model="ctrl.data.4" type="text">
-  <input async-validator="{ inline: '$value != \"ok\" && !$error.required' }" ng-model="ctrl.data.5" type="text" >
-  <input async-validator="'$model.$viewValue != \"2\"'" ng-model="ctrl.data.6" type="text">
+   <input async-validator="{ required: 'required' }" ng-model="ctrl.data.n1" type="text">
+   <input async-validator="'$model.$modelValue.length > 3'" ng-model="ctrl.data.n2" type="text">
+   <input async-validator="'nome'" ng-model="ctrl.data.n3" type="text">
+   <input async-validator="{ custom: 'ctrl.controllerValidation($value)' }" ng-model="ctrl.data.n4" type="text">
+   <input async-validator="{ inline: '$value != ok && !$error.required' }" required ng-model="ctrl.data.n5" type="text" >
+   <input async-validator="'$model.$viewValue != ctrl.data.value'" ng-model="data.n6" type="text">
 </div>
 ```
 
