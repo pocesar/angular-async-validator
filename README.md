@@ -6,6 +6,8 @@ validation and form manipulation in Angular 1.x is a pain by itself.
 
 Provides no validation functions out-of-the-box. You may reuse the ones from Angular without a problem. 
 
+Requires Angular 1.3+
+
 ## Motivation
 
 Current module implementations only deal with sync validations, validators set in scopes or controllers, 
@@ -90,12 +92,12 @@ Use it in your HTML input ng-models (notice they are all expressions, therefore 
 
 ```html
 <div ng-controller="Ctrl as ctrl">
-  <input ng-model="ctrl.data.1" type="text" async-validator="{ required: 'required' }">
-  <input ng-model="ctrl.data.2" type="text" async-validator="'$model.$modelValue.length > 10'">
-  <input ng-model="ctrl.data.3" type="text" async-validator="'usingValidateJs'">
-  <input ng-model="ctrl.data.4" type="text" async-validator="{ custom: 'ctrl.controllerValidation($value)' }">
-  <input ng-model="ctrl.data.5" type="text" async-validator="{ inline: '$value != \"ok\" && !$error.required' }">
-  <input ng-model="ctrl.data.6" type="text" async-validator="'$model.$viewValue != \"2\"'">
+  <input async-validator="{ required: 'required' }" ng-model="ctrl.data.1" type="text">
+  <input async-validator="'$model.$modelValue.length > 10'" ng-model="ctrl.data.2" type="text">
+  <input async-validator="'usingValidateJs'" ng-model="ctrl.data.3" type="text">
+  <input async-validator="{ custom: 'ctrl.controllerValidation($value)' }" ng-model="ctrl.data.4" type="text">
+  <input async-validator="{ inline: '$value != \"ok\" && !$error.required' }" ng-model="ctrl.data.5" type="text" >
+  <input async-validator="'$model.$viewValue != \"2\"'" ng-model="ctrl.data.6" type="text">
 </div>
 ```
 
