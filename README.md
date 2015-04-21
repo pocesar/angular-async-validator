@@ -13,11 +13,11 @@ This module requires Angular 1.3+
 ## Motivation
 
 Current module implementations only deal with sync validations, validators set in scopes or controllers, 
-or provide 1 directive for each type of validation, which is an overkill. 
+or provide 1 directive for each type of validation (`validate-number`, `validate-presence`, `validate-stuff`, etc), which is an overkill. 
 
-Async should be norm, and regardless if the validation itself isn't asynchronous, because the UI is asynchronous afterall. Plus there are a plethora of validation libraries, having to rely on Angular built-in ones is too limited, or having to write a directive for each validation you need is also overkill.
+Async should be norm, and regardless if the validation itself isn't asynchronous, because the UI is asynchronous afterall. Plus there are a plethora of quality validation Javascript libraries, having to rely on Angular built-in ones is too limited, or you having to write a directive for each validation you need is also overkill.
 
-Main goal is to be able to created two directives to rule them all, plus 1 service and 1 provider in a concise 
+Main goal is to be able with few reusable directives to rule them all, plus 1 service and 1 provider in a concise 
 module that does it's job well without all the bells and whistles.
 
 ## Usage
@@ -105,19 +105,21 @@ Use it in your HTML input ng-models (notice they are all expressions, therefore 
 
 ```html
 <div ng-controller="Ctrl as ctrl">
-   <input async-validator="{ required: 'required' }" ng-model="ctrl.data.n1" type="text">
-   <input async-validator="'$model.$modelValue.length > 3'" ng-model="ctrl.data.n2" type="text">
-   <input async-validator="'nome'" ng-model="ctrl.data.n3" type="text">
+   <input async-validator="{ required: 'required' }" async-validator-options="{ inline: true }" ng-model="ctrl.data.n1" type="text">
+   <input async-validator="'$model.$modelValue.length > 3'" async-validator-options-validator="{ outline: true }" ng-model="ctrl.data.n2" type="text">
+   <input async-validator="'nome'" async-validator-options-nome="{ forNome: 'ok' }" ng-model="ctrl.data.n3" type="text">
    <input async-validator="{ custom: 'ctrl.controllerValidation($value)' }" ng-model="ctrl.data.n4" type="text">
    <input async-validator="{ inline: '$value != ctrl.data.ok && !$error.required' }" required ng-model="ctrl.data.n5" type="text" >
 </div>
 ```
 
-The helper attribute `async-validator-watch` can watch an expression. If it changes (regardless if truthy or falsy) will trigger the `$validate()` call on the ngModel
+The helper attribute `async-validator-watch` can watch an expression. If it changes (regardless if truthy or falsy) will trigger the `$validate()` call on the ngModel. 
 
 ```html
    <input async-validator-watch="'ctrl.hasChanged'" async-validator="'$model.$viewValue != ctrl.data.value'" ng-model="data.n6" type="text">
 ```
+
+For your own options that apply to all validators, use `async-validator-options="{}"`. If you need to specify specifically for one validator write it as `async-validator-options-REGISTEREDNAME="{}"`. 
 
 Locals available:
 
@@ -129,8 +131,8 @@ Use it in your form once and apply the same validation to all underlaying models
 
 ```html
 <form async-validator-form="{ required: 'required', dummy: 'ctrl.controllerValidation($value)' }">
-  <input type="email" name="email" ng-model"ctrl.data.email">
-  <input type="tel" ng-model"ctrl.data.phone" async-validator-add>
+  <input type="email" name="email" ng-model"ctrl.data.email"> <!-- value will have to pass required and dummy validators -->
+  <input type="tel" ng-model"ctrl.data.phone" async-validator-add> <!-- value will have to pass required and dummy validators -->
 </form>
 ```
 
