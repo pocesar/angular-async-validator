@@ -69,7 +69,16 @@ angular.module('yourapp', [
         format: /1910-100/
       });
     };
-  }], { valueFrom: '$viewValue', options: { someExtraOptions: true} });
+  }], { valueFrom: '$viewValue', options: { someExtraOptions: true} })
+
+  register('equals', function(){
+    return function(value, options) {
+      if (!angular.isDefined(options.to)) {
+        return false;
+      }
+      return angular.equals(value.$modelValue, options.to);
+    };
+  })
   ;
 
 }])
@@ -93,8 +102,9 @@ angular.module('yourapp', [
       n2: '1234',
       n3: 'fsa',
       n4: 'fda',
-      n5: 'fda',
+      n5: 'dsa',
       n6: 'ds',
+      n7: 'dsaa',
       value: '2',
       ok: 'ok'
   };
@@ -107,11 +117,54 @@ Use it in your HTML input ng-models (notice they are all expressions, therefore 
 
 ```html
 <div ng-controller="Ctrl as ctrl">
-   <input async-validator="{ required: 'required' }" async-validator-options="{ inline: true }" ng-model="ctrl.data.n1" type="text">
-   <input async-validator="'$model.$modelValue.length > 3'" async-validator-options-validator="{ outline: true }" ng-model="ctrl.data.n2" type="text">
-   <input async-validator="'nome'" async-validator-options-nome="{ forNome: 'ok' }" ng-model="ctrl.data.n3" type="text">
-   <input async-validator="{ custom: 'ctrl.controllerValidation($value)' }" ng-model="ctrl.data.n4" type="text">
-   <input async-validator="{ inline: '$value != ctrl.data.ok && !$error.required' }" required ng-model="ctrl.data.n5" type="text" >
+
+   <input
+      async-validator="{ required: 'required' }"
+      async-validator-options="{ inline: true }"
+      ng-model="ctrl.data.n1"
+      type="text"
+      >
+
+   <input
+      async-validator="'$model.$modelValue.length > 3'"
+      async-validator-options-validator="{ outline: true }"
+      ng-model="ctrl.data.n2"
+      type="text"
+      >
+
+   <input
+      async-validator="['strongpassword','length']"
+      ng-model="ctrl.data.n3"
+      type="text"
+      >
+
+   <input
+      async-validator="'equals'"
+      async-validator-options-nome="{ to: ctrl.data.n3 }"
+      async-validator-watch="ctrl.data.n3"
+      ng-model="ctrl.data.n4"
+      type="text"
+      >
+
+   <input
+      async-validator="'nome'"
+      async-validator-options-nome="{ forNome: 'ok' }"
+      ng-model="ctrl.data.n5"
+      type="text"
+      >
+
+   <input
+      async-validator="{ custom: 'ctrl.controllerValidation($value)' }"
+      ng-model="ctrl.data.n6"
+      type="text"
+      >
+
+   <input
+      async-validator="{ inline: '$value != ctrl.data.ok && !$error.required' }"
+      required
+      ng-model="ctrl.data.n7"
+      type="text"
+      >
 </div>
 ```
 
@@ -121,7 +174,19 @@ The helper attribute `async-validator-watch` can watch an expression. If it chan
    <input async-validator-watch="'ctrl.hasChanged'" async-validator="'$model.$viewValue != ctrl.data.value'" ng-model="data.n6" type="text">
 ```
 
-For your own options that apply to all validators, use `async-validator-options="{}"`. If you need to specify specifically for one validator write it as `async-validator-options-REGISTEREDNAME="{}"`.
+For your own options that apply to all validators, use `async-validator-options="{}"`. If you need to specify specifically for one validator write it as `async-validator-options-REGISTEREDNAME="{}"`. Scope and controller variables can be referenced in the options.
+
+The options goes to the least specific and get merged as it becomes more specific. For example:
+
+```html
+  <input
+    async-validator="['required','specific']"
+    async-validator-options="{lol: 'yes', ok: true}"
+    async-validator-options-specific="{ok: false}"
+    >
+  <!-- required validator will receive the {lol: 'yes', ok: true} -->
+  <!-- specific validator will receive the {lol: 'yes', ok: false} -->
+```
 
 Locals available:
 
