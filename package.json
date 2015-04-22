@@ -9,12 +9,14 @@
     "travis": "karma start tests/karma.conf.js --single-run --browsers PhantomJS"
   },
   "devDependencies": {
-    "karma": "0.12.x",
+    "coveralls": "2.x",
+    "karma": "^0.12.31",
     "karma-cli": "x",
     "karma-coverage": "0.x",
     "karma-mocha": "0.x",
-    "coveralls": "2.x",
-    "karma-phantomjs-launcher": "0.x"
+    "karma-phantomjs-launcher": "0.x",
+    "karma-sinon": "^1.0.4",
+    "sinon": "^1.14.1"
   },
   "keywords": [
     "angular",

@@ -316,4 +316,3 @@ var AsyncValidator;
     })(Directives || (Directives = {}));
     angular.module('AsyncValidator', []).directive(Directives).provider('AsyncValidator', Providers.AsyncValidatorProvider.instance());
 })(AsyncValidator || (AsyncValidator = {}));
-module.exports = AsyncValidator;

@@ -1,11 +1,25 @@
 describe('AsyncValidator', function () {
     'use strict';
 
-    var expect = chai.expect, $scope, $compile, $rootScope, $q, Provider, $injector;
+    var expect = chai.expect, $scope, $compile, $rootScope, $q, Provider, $injector, $provide;
+
+    var $exceptionHandler = {
+        fn: function(exception, cause) {
+            throw exception;
+        }
+    };
 
     beforeEach(
-        module('AsyncValidator', function(AsyncValidatorProvider){
+        module('AsyncValidator', function(AsyncValidatorProvider, _$provide_){
             Provider = AsyncValidatorProvider;
+            $provide = _$provide_;
+
+            $provide.factory('$exceptionHandler', function() {
+              return function(exception, cause) {
+                return $exceptionHandler.fn(exception, cause);
+              };
+            });
+
         })
     );
 
@@ -54,7 +68,7 @@ describe('AsyncValidator', function () {
         });
 
         it('should register validators and work properly', function(done){
-            var call = 0;
+            var call = 0, caught = false;
 
             Provider.register('dummy', function(){
                 return function(){
@@ -88,7 +102,19 @@ describe('AsyncValidator', function () {
                     nope;
                 };
             });
+            Provider.register('willcrash', function(){
+                return function(){
+                    nope;
+                };
+            }, { silentRejection: false });
 
+            expect(function(){
+                Provider.register('dummy3', fn, { overwrite: false });
+            }).to.throw(/is already defined/);
+
+            sinon.stub($exceptionHandler, 'fn', function(){
+                caught = true;
+            });
 
             AsyncValidator = $injector.get('AsyncValidator');
 
@@ -116,6 +142,11 @@ describe('AsyncValidator', function () {
             })
             .catch(function(err){
                 expect(err).to.match(/nope/);
+                return AsyncValidator.run('willcrash','test');
+            })
+            .catch(function(err){
+                expect(caught).to.equal(true);
+                $exceptionHandler.fn.restore();
                 done();
             });
 
