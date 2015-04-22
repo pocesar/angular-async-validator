@@ -140,7 +140,7 @@ Use it in your HTML input ng-models (notice they are all expressions, therefore 
 
    <input
       async-validator="'equals'"
-      async-validator-options-nome="{ to: ctrl.data.n3 }"
+      async-validator-options-equals="{ to: ctrl.data.n3 }"
       async-validator-watch="ctrl.data.n3"
       ng-model="ctrl.data.n4"
       type="text"
@@ -165,6 +165,7 @@ Use it in your HTML input ng-models (notice they are all expressions, therefore 
       ng-model="ctrl.data.n7"
       type="text"
       >
+      <!-- can mix synchronous angular validations with async, in this case, using the "required" -->
 </div>
 ```
 
