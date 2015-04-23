@@ -10,7 +10,7 @@ var AsyncValidator;
                 angular.forEach(provider.validations, function (validator) {
                     validator.validator = $injector.invoke(validator.factoryFn);
                 });
-                this.run = function (name, value, options) {
+                this.run = function (name, value, options, returnValue) {
                     if (typeof provider.validations[name] === 'undefined' || typeof provider.validations[name].validator !== 'function') {
                         return $q.reject(name + ' isn\'t a registered async validator');
                     }
@@ -24,18 +24,18 @@ var AsyncValidator;
                         }
                     }).then(function (result) {
                         if (!!result) {
-                            return value;
+                            return returnValue === false ? true : value;
                         }
                         return $q.reject();
-                    }, function (err) {
+                    }, function (e) {
                         if (provider.validations[name].options.silentRejection) {
-                            return $q.reject(err);
+                            return $q.reject(e);
                         }
-                        if (angular.isString(err)) {
-                            throw new Error(err);
+                        if (angular.isString(e)) {
+                            throw new Error(e);
                         }
                         else {
-                            throw err;
+                            throw e;
                         }
                     });
                 };
@@ -72,7 +72,8 @@ var AsyncValidator;
                     options: {},
                     overwrite: true,
                     removeSync: true,
-                    silentRejection: true
+                    silentRejection: true,
+                    returnValue: true
                 };
                 this.$get = Services.AsyncValidator.instance(this);
             }
@@ -108,21 +109,21 @@ var AsyncValidator;
                 this.callback = callback;
                 if (this.$pending.length > 0) {
                     angular.forEach(this.$pending, function (pending) {
-                        _this.add(pending.model, pending.scope, pending.options);
+                        _this.add(pending.model, pending.scope, pending.attrs);
                     });
                     this.$pending.length = 0;
                 }
             };
-            AsyncForm.prototype.add = function (model, scope, options) {
+            AsyncForm.prototype.add = function (model, scope, attrs) {
                 if (!this.callback) {
                     this.$pending.push({
                         model: model,
                         scope: scope,
-                        options: options
+                        attrs: attrs
                     });
                     return;
                 }
-                this.callback(model, scope, options);
+                this.callback(model, scope, attrs);
             };
             AsyncForm.$inject = [];
             return AsyncForm;
@@ -135,10 +136,13 @@ var AsyncValidator;
         function parseOptions(scope, attrs) {
             var opts = { '__': {} }, evaled;
             angular.forEach(attrs.$attr, function (value, key) {
+                if (!attrs[key]) {
+                    return;
+                }
                 var matches;
                 if ((matches = value.match(optionsRegex))) {
                     if (matches[1]) {
-                        if (typeof (evaled = scope.$eval(attrs[key])) === 'object') {
+                        if (angular.isObject(evaled = scope.$eval(attrs[key]))) {
                             if (typeof opts[matches[1]] !== 'object') {
                                 opts[matches[1]] = {};
                             }
@@ -146,7 +150,7 @@ var AsyncValidator;
                         }
                     }
                     else {
-                        if (typeof (evaled = scope.$eval(attrs[key])) === 'object') {
+                        if (angular.isObject(evaled = scope.$eval(attrs[key]))) {
                             angular.extend(opts['__'], evaled);
                         }
                     }
@@ -154,7 +158,7 @@ var AsyncValidator;
             });
             return opts;
         }
-        function addValidators(validateExpr, AsyncValidator, ctrl, scope, $q, _options) {
+        function addValidators(validateExpr, AsyncValidator, ctrl, scope, $q, $attrs) {
             if (angular.isString(validateExpr)) {
                 if (AsyncValidator.validator(validateExpr)) {
                     var validatorName = validateExpr;
@@ -168,7 +172,7 @@ var AsyncValidator;
                 }
             }
             angular.forEach(validateExpr, function (exprssn, key) {
-                var opts = AsyncValidator.options(key), modelOptions = _options['__'], validator = key;
+                var opts = AsyncValidator.options(key), validator = key;
                 if (angular.isString(exprssn) && angular.equals(opts, {})) {
                     opts = AsyncValidator.options(exprssn);
                     if (!angular.equals(opts, {})) {
@@ -184,14 +188,14 @@ var AsyncValidator;
                         key = 'validator';
                     }
                 }
-                else if (typeof _options[key] === 'object') {
-                    angular.extend(modelOptions, _options[key]);
-                }
-                if (typeof _options[validator] === 'object') {
-                    angular.extend(modelOptions, _options[validator]);
-                }
                 ctrl.$asyncValidators[key] = function validationFn(val) {
-                    var value;
+                    var value, _options = parseOptions(scope, $attrs), modelOptions = _options['__'];
+                    if (typeof _options[key] === 'object') {
+                        angular.extend(modelOptions, _options[key]);
+                    }
+                    if (typeof _options[validator] === 'object') {
+                        angular.extend(modelOptions, _options[validator]);
+                    }
                     if (opts && opts.valueFrom === false) {
                         value = ctrl;
                     }
@@ -208,7 +212,7 @@ var AsyncValidator;
                         value = val;
                     }
                     if (exprssn === '__VALIDATOR__' || exprssn === validator) {
-                        return AsyncValidator.run(validator, value, modelOptions);
+                        return AsyncValidator.run(validator, value, modelOptions, false);
                     }
                     else {
                         var expression = scope.$eval(exprssn, {
@@ -241,18 +245,18 @@ var AsyncValidator;
                 this.require = ['form', 'asyncFormValidator'];
                 this.controller = Controllers.AsyncForm;
                 this.link = function (scope, el, attrs, ctrls) {
-                    var validateExpr = scope.$eval(attrs['asyncFormValidator']), options = parseOptions(scope, attrs);
-                    ctrls[1].setup(function (model, _scope, _options) {
-                        addValidators(validateExpr, AsyncValidator, model, _scope, $q, _options);
+                    var validateExpr = scope.$eval(attrs['asyncFormValidator']), asyncValidatorCtrl = ctrls[1];
+                    asyncValidatorCtrl.setup(function (model, _scope, $attrs) {
+                        addValidators(validateExpr, AsyncValidator, model, _scope, $q, $attrs);
                     });
                     angular.forEach(ctrls[0], function (model, key) {
                         if (angular.isObject(model) && key.charAt(0) !== '$') {
-                            ctrls[1].add(model, scope, options);
+                            asyncValidatorCtrl.add(model, scope, attrs);
                         }
                     });
                     scope.$on('$destroy', function () {
-                        ctrls[1].$pending.length = 0;
-                        ctrls[1].callback = null;
+                        asyncValidatorCtrl.$pending.length = 0;
+                        asyncValidatorCtrl.callback = null;
                     });
                 };
             }
@@ -269,8 +273,9 @@ var AsyncValidator;
                 this.require = ['ngModel', '^asyncFormValidator'];
                 this.priority = 10;
             }
-            AsyncValidatorAdd.prototype.link = function (scope, el, attr, ctrls) {
-                ctrls[1].add(ctrls[0], scope, parseOptions(scope, attr));
+            AsyncValidatorAdd.prototype.link = function (scope, el, attrs, ctrls) {
+                var ngModel = ctrls[0], asyncValidatorCtrl = ctrls[1];
+                asyncValidatorCtrl.add(ngModel, scope, attrs);
             };
             AsyncValidatorAdd.instance = function () {
                 var _this = this;
@@ -288,7 +293,7 @@ var AsyncValidator;
                     if (!validateExpr) {
                         return;
                     }
-                    addValidators(validateExpr, AsyncValidator, ctrl, scope, $q, parseOptions(scope, attrs));
+                    addValidators(validateExpr, AsyncValidator, ctrl, scope, $q, attrs);
                     var watches = [];
                     function watchValues(watch) {
                         if (angular.isString(watch)) {
