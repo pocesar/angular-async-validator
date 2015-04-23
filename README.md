@@ -172,7 +172,24 @@ Use it in your HTML input ng-models (notice they are all expressions, therefore 
 The helper attribute `async-validator-watch` can watch an expression. If it changes (regardless if truthy or falsy) will trigger the `$validate()` call on the ngModel.
 
 ```html
-   <input async-validator-watch="'ctrl.hasChanged'" async-validator="'$model.$viewValue != ctrl.data.value'" ng-model="data.n6" type="text">
+   <input
+      async-validator-watch="'ctrl.hasChanged'"
+      async-validator="'$model.$viewValue != ctrl.data.value'"
+      ng-model="data.n6"
+      type="text"
+      >
+   <input
+      async-validator-watch="ctrl.data"
+      async-validator="'$model.$viewValue != ctrl.data.value'"
+      ng-model="data.n6"
+      type="text"
+      >
+   <input
+      async-validator-watch="['ctrl.data','ctrl.hasChanged']"
+      async-validator="'$model.$viewValue != ctrl.data.value'"
+      ng-model="data.n6"
+      type="text"
+      >
 ```
 
 For your own options that apply to all validators, use `async-validator-options="{}"`. If you need to specify specifically for one validator write it as `async-validator-options-REGISTEREDNAME="{}"`. Scope and controller variables can be referenced in the options.
@@ -200,8 +217,18 @@ Use it in your form once and apply the same validation to all underlaying models
 
 ```html
 <form async-validator-form="{ required: 'required', dummy: 'ctrl.controllerValidation($value)' }">
-  <input type="email" name="email" ng-model"ctrl.data.email"> <!-- value will have to pass required and dummy validators -->
-  <input type="tel" ng-model"ctrl.data.phone" async-validator-add> <!-- value will have to pass required and dummy validators -->
+  <input
+      type="email"
+      name="email"
+      ng-model"ctrl.data.email">
+  <!-- value will have to pass Angular internal required and our registered dummy validator -->
+
+  <input
+      type="tel"
+      ng-model"ctrl.data.phone"
+      async-validator-add
+      >
+  <!-- value will have to pass Angular internal required and our registered dummy validator -->
 </form>
 ```
 
@@ -209,10 +236,14 @@ Use it in your form once and apply the same validation to all underlaying models
 
 When registering a validator, you can pass your own options to it using the third parameter as an object and setting the `options` member.
 
-* `valueFrom` where to get the current value. Defaults to `undefined`, and passes the whole ngModelController to the validator function as the first parameter
+* `valueFrom` where to get the current value. Defaults to `false`, and passes the whole ngModelController to the validator function as the first parameter. You can set to model properties like `$viewValue`, `$modelValue`, `$$lastCommittedViewValue`, `$$rawModelValue`, etc
+
 * `options` any options that the validator function receives as the second parameter, defaults to `{}`
+
 * `overwrite` if you set to false, it will throw if there's another validator with same name, defaults to `true`
-* `removeSync` will not remove synchronous validators if they have the same name, defaults to `false` (removes validators with same name)
+
+* `removeSync` removes synchronous validators if they have the same name as your registered validator, defaults to `true`. Eg: using `<input ng-model="model" required async-validator="'required'">` will delete the default `required` validator
+
 * `silentRejection` if sets to false, will rethrow the error. will turn any throws and rejections into an "invalid" validation, defaults to true.
 
 ## License

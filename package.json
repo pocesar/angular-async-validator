@@ -1,22 +1,24 @@
 {
   "name": "angular-async-validator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "This module enables you to register your own validation rules, or overwrite existing ones. Makes every validation 'promise based', so it can deal with both synchronous  and asynchronous validations. Also, sometimes you want validate an entire form when a model changes, which currently there are no good ways to do this, hence this module, because validation and form manipulation in Angular 1.x is a pain by itself.",
   "main": "index.js",
   "scripts": {
     "test": "karma start tests/karma.conf.js",
-    "compile": "tsc --noImplicitAny --module commonjs typings/tsd.d.ts angular-async-validator.ts",
+    "compile": "tsc --noImplicitAny --module commonjs --target es5 --declaration typings/tsd.d.ts angular-async-validator.ts && umd AsyncValidator angular-async-validator.js --commonJS > angular-async-validator.umd.js",
     "travis": "karma start tests/karma.conf.js --single-run --browsers PhantomJS"
   },
   "devDependencies": {
     "coveralls": "2.x",
-    "karma": "^0.12.31",
+    "karma": "0.12.x",
     "karma-cli": "x",
+    "mocha": "2.x",
     "karma-coverage": "0.x",
     "karma-mocha": "0.x",
     "karma-phantomjs-launcher": "0.x",
-    "karma-sinon": "^1.0.4",
-    "sinon": "^1.14.1"
+    "karma-sinon": "1.x",
+    "sinon": "1.x",
+    "umd": "3.x"
   },
   "keywords": [
     "angular",

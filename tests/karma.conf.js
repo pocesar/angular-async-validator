@@ -18,7 +18,7 @@ module.exports = function(config) {
       'bower_components/chai/chai.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'angular-async-validator.js',
+      'angular-async-validator.umd.js',
       'tests/*.test.js'
     ],
 
