@@ -135,7 +135,8 @@ describe('AsyncValidator', function () {
             }).to.throw(/is already defined/);
 
             sinon.stub($exceptionHandler, 'fn', function(err){
-                if ($exceptionHandler.fn.callCount > 4) {
+                if (err.name === 'AssertionError') {
+                    // always throw assertionerrors, they are expected
                     throw err;
                 }
             });
@@ -367,7 +368,11 @@ describe('AsyncValidator', function () {
 
             $scope['ok'] = invalidSpy;
 
-            sinon.stub($exceptionHandler, 'fn', function(){});
+            sinon.stub($exceptionHandler, 'fn', function(err){
+                if (err.name === 'AssertionError') {
+                    throw err;
+                }
+            });
 
             var
                 el = input('<input ng-model="data.n2"  async-validator="\'ok($value)\'" />');
@@ -393,7 +398,11 @@ describe('AsyncValidator', function () {
             $scope['two'] = 2;
             $scope['ok'] = sinon.stub.returns(true);
 
-            sinon.stub($exceptionHandler, 'fn', function(){});
+            sinon.stub($exceptionHandler, 'fn', function(err){
+                if (err.name === 'AssertionError') {
+                    throw err;
+                }
+            });
 
             var
                 el = input('<input ng-model="data.n2" async-validator-watch="[\'one\',\'two\']"  async-validator="\'ok($value)\'" />');
