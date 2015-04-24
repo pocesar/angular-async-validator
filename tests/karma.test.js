@@ -114,7 +114,17 @@ describe('AsyncValidator', function () {
                     nope;
                 };
             }, { silentRejection: false });
+            Provider.register('rejectionError', function(){
+                return function(){
+                    return $q.reject(new Error('oh my'));
+                };
+            }, { silentRejection: false });
             Provider.register('forcereject', function(){
+                return function(){
+                    return $q.reject('ok');
+                };
+            }, { silentRejection: false });
+            Provider.register('forcesilencereject', function(){
                 return function(){
                     return $q.reject('ok');
                 };
@@ -125,7 +135,7 @@ describe('AsyncValidator', function () {
             }).to.throw(/is already defined/);
 
             sinon.stub($exceptionHandler, 'fn', function(err){
-                if ($exceptionHandler.fn.callCount > 2) {
+                if ($exceptionHandler.fn.callCount > 4) {
                     throw err;
                 }
             });
@@ -163,8 +173,16 @@ describe('AsyncValidator', function () {
                 return AsyncValidator.run('forcereject','test');
             })
             .catch(function(err){
-                expect($exceptionHandler.fn.callCount).to.equal(2);
-                expect(err).to.equal('ok');
+                return AsyncValidator.run('forcesilencereject','test');
+            })
+            .catch(function(err){
+                expect(err).to.match(/ok/);
+                return AsyncValidator.run('rejectionError');
+            })
+            .catch(function(err){
+                expect($exceptionHandler.fn.callCount).to.equal(4);
+                expect($exceptionHandler.fn.args[2][0]).to.match(/ok/);
+                expect($exceptionHandler.fn.args[3][0]).to.match(/oh my/);
                 done();
             });
 
