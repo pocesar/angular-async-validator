@@ -23,6 +23,12 @@ describe('AsyncValidator', function () {
         })
     );
 
+    afterEach(function(){
+        if ($exceptionHandler.fn.restore) {
+            $exceptionHandler.fn.restore();
+        }
+    });
+
 
     function input(inputHtml) {
         var
@@ -112,7 +118,7 @@ describe('AsyncValidator', function () {
                 return function(){
                     return $q.reject('ok');
                 };
-            }, { silentRejection: false });
+            });
 
             expect(function(){
                 Provider.register('dummy3', fn, { overwrite: false });
@@ -158,8 +164,7 @@ describe('AsyncValidator', function () {
             })
             .catch(function(err){
                 expect($exceptionHandler.fn.callCount).to.equal(2);
-                expect($exceptionHandler.fn.args[1][0].message).to.equal('ok');
-                $exceptionHandler.fn.restore();
+                expect(err).to.equal('ok');
                 done();
             });
 
@@ -353,7 +358,6 @@ describe('AsyncValidator', function () {
             $scope.$digest();
 
             expect($exceptionHandler.fn.args[0][0]).to.match(/uhoh/);
-            $exceptionHandler.fn.restore();
         });
 
         it('ignores invalid expressions', function(){
@@ -386,7 +390,6 @@ describe('AsyncValidator', function () {
             $scope.$destroy();
 
             expect(el.controller().$asyncValidators).to.deep.equal({});
-            $exceptionHandler.fn.restore();
         });
 
         it('removes synchronous validators with same name', function(){
@@ -529,6 +532,62 @@ describe('AsyncValidator', function () {
                 $scope.$digest();
 
                 expect($scope['ok'].args[0]).to.be.deep.equal([{  }]);
+            });
+
+            it('can use the same validator many times with different options', function(){
+                var spy = sinon.spy();
+
+                Provider.register('reuseValidator', function(){
+                    return function($model, options) {
+                        spy($model.$viewValue, options.mode);
+
+                        switch (options.mode) {
+                            case 'number':
+                                return /^[0-9]+$/.test($model.$viewValue);
+                            case 'object':
+                                try {
+                                    return angular.isObject(JSON.parse($model.$viewValue));
+                                } catch (e) {
+                                    return false;
+                                }
+                            case 'boolean':
+                                return !!$model.$viewValue;
+                        }
+                        return true; // never fail the base validator
+                    };
+                });
+
+                $scope['options'] = {
+                    number: { mode: 'number' },
+                    object: { mode: 'object' },
+                    boolean: { mode: 'boolean' },
+                };
+
+                var el = input('<input ng-model="data.n6" async-validator-options-boolean="options.boolean" async-validator-options-object="options.object" async-validator-options-number="options.number" async-validator="{number: \'reuseValidator\', object: \'reuseValidator\', boolean: \'reuseValidator\'}">');
+                el.compiled($scope);
+                $scope.$digest();
+
+                expect(spy.args[0]).to.deep.equal([$scope.data.n6, 'number']);
+                expect(spy.args[1]).to.deep.equal([$scope.data.n6, 'object']);
+                expect(spy.args[2]).to.deep.equal([$scope.data.n6, 'boolean']);
+
+                expect(el.controller()).to.have.deep.property('$error.number', true);
+                expect(el.controller()).to.not.have.deep.property('$error.boolean');
+                expect(el.controller()).to.have.deep.property('$error.object', true);
+
+                $scope.data.n6 = '{}';
+                $scope.$digest();
+
+                expect(el.controller()).to.have.deep.property('$error.number', true);
+                expect(el.controller()).to.not.have.deep.property('$error.boolean');
+                expect(el.controller()).to.not.have.deep.property('$error.object');
+
+                $scope.data.n6 = '10';
+                $scope.$digest();
+
+                expect(el.controller()).to.not.have.deep.property('$error.number');
+                expect(el.controller()).to.not.have.deep.property('$error.boolean');
+                expect(el.controller()).to.have.deep.property('$error.object', true);
             });
 
 

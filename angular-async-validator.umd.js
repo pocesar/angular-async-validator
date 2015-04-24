@@ -12,22 +12,17 @@ var AsyncValidator;
                 });
                 this.run = function (name, value, options, returnValue) {
                     if (typeof provider.validations[name] === 'undefined' || typeof provider.validations[name].validator !== 'function') {
-                        return $q.reject(name + ' isn\'t a registered async validator');
+                        return $q.reject("" + name + " isn't a registered async validator");
                     }
                     options = angular.extend({}, provider.validations[name].options.options, options);
-                    return new $q(function (resolve, reject) {
-                        try {
-                            resolve(provider.validations[name].validator(value, options));
-                        }
-                        catch (e) {
-                            reject(e);
-                        }
-                    }).then(function (result) {
+                    return new $q(function asyncValidatorRunResolver(resolve) {
+                        resolve(provider.validations[name].validator(value, options));
+                    }).then(function asyncValidatorResolved(result) {
                         if (!!result) {
                             return returnValue === false ? true : value;
                         }
                         return $q.reject();
-                    }, function (e) {
+                    }, function asyncValidatorRejected(e) {
                         if (provider.validations[name].options.silentRejection) {
                             return $q.reject(e);
                         }

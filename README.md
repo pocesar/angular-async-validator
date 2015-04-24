@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/pocesar/angular-async-validator.svg?branch=master)](https://travis-ci.org/pocesar/angular-async-validator) [![Coverage Status](https://coveralls.io/repos/pocesar/angular-async-validator/badge.svg)](https://coveralls.io/r/pocesar/angular-async-validator)
 
+[![NPM](https://nodei.co/npm/angular-async-validator.png)](https://nodei.co/npm/angular-async-validator/)
+
 Angular Async Validator
 =====
 
@@ -10,7 +12,11 @@ Provides no validation functions out-of-the-box. You may reuse the ones from Ang
 
 Code was based off [ui-validate](http://angular-ui.github.io/ui-utils/#/validate) initially, but it's too simple and lagging behind still using $parsers and $formatters since it need to retain 1.2 compatibility.
 
-This module requires Angular 1.3+
+This module requires Angular 1.3+, and has no dependencies other than Angular itself.
+
+It also supports 3rd party promise libraries such as RSVP, Q, Bluebird, etc.
+
+[DEMO](http://plnkr.co/edit/jIhkAPShgK4ggRYN4N1S?p=preview)
 
 ## Motivation
 
