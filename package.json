@@ -1,6 +1,6 @@
 {
   "name": "angular-async-validator",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "This module enables you to register your own validation rules, or overwrite existing ones. Makes every validation 'promise based', so it can deal with both synchronous  and asynchronous validations. Also, sometimes you want validate an entire form when a model changes, which currently there are no good ways to do this, hence this module, because validation and form manipulation in Angular 1.x is a pain by itself.",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/pocesar/angular-async-validator.git"
+  },
+  "dependencies": {
+    "angular":">=1.3 <2"
   },
   "author": "Paulo Cesar <https://github.com/pocesar>",
   "license": "MIT",
