@@ -28,6 +28,20 @@ Async should be norm, and regardless if the validation itself isn't asynchronous
 Main goal is to be able with few reusable directives to rule them all, plus 1 service and 1 provider in a concise
 module that does it's job well without all the bells and whistles.
 
+## Install
+
+### NPM
+
+```
+$ npm instal angular-async-validator --save
+```
+
+### Bower
+
+```
+$ bower install angular-async-validator --save
+```
+
 ## Usage
 
 ```js

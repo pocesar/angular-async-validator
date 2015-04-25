@@ -1,6 +1,6 @@
 {
   "name": "angular-async-validator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Makes Angular models async validation a little less painful.",
   "main": "index.js",
   "scripts": {
