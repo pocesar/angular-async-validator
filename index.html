@@ -37,7 +37,7 @@ validation and form manipulation in Angular 1.x is a pain by itself.</p>
 
 <p>It also supports 3rd party promise libraries such as RSVP, Q, Bluebird, etc.</p>
 
-<p><a href="http://plnkr.co/edit/jIhkAPShgK4ggRYN4N1S?p=preview">DEMO</a></p>
+<p><a href="http://embed.plnkr.co/oFVFE7/preview">DEMO</a></p>
 
 <h2>
 <a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Motivation</h2>
@@ -77,11 +77,12 @@ module that does it's job well without all the bells and whistles.</p>
 
 
   .register(<span class="pl-s"><span class="pl-pds">'</span>required<span class="pl-pds">'</span></span>, [<span class="pl-k">function</span>(){
-    <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>){
+    <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>, <span class="pl-smi">model</span>){
       <span class="pl-c">// options === {}</span>
+      <span class="pl-c">// model.$viewValue / model.$error etc</span>
       <span class="pl-k">return</span> angular.isDefined(value);
     };
-  }], { valueFrom<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>$$rawModelValue<span class="pl-pds">'</span></span> }) <span class="pl-c">// pluck it out from ngModel, using $$rawModelValue instead of $modelValue, because $modelValue might only be defined after required validation is actually called</span>
+  }]) <span class="pl-c">// pluck it out from ngModel, using $$rawModelValue instead of $modelValue, because $modelValue might only be defined after required validation is actually called</span>
 
 
   .register(<span class="pl-s"><span class="pl-pds">'</span>usingValidateJs<span class="pl-pds">'</span></span>, [<span class="pl-k">function</span>(){
@@ -97,7 +98,7 @@ module that does it's job well without all the bells and whistles.</p>
         format<span class="pl-k">:</span><span class="pl-sr"> <span class="pl-pds">/</span>1910-100<span class="pl-pds">/</span></span>
       });
     };
-  }], { valueFrom<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>$viewValue<span class="pl-pds">'</span></span>, options<span class="pl-k">:</span> { someExtraOptions<span class="pl-k">:</span> <span class="pl-c1">true</span>} })
+  }], { options<span class="pl-k">:</span> { someExtraOptions<span class="pl-k">:</span> <span class="pl-c1">true</span>} })
 
   register(<span class="pl-s"><span class="pl-pds">'</span>equals<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(){
     <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>) {
@@ -256,6 +257,27 @@ module that does it's job well without all the bells and whistles.</p>
       <span class="pl-e">async-validator-add</span>
       &gt;
   <span class="pl-c">&lt;!-- value will have to pass Angular internal required and our registered dummy validator --&gt;</span>
+
+  &lt;<span class="pl-ent">div</span> <span class="pl-e">async-group-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>{ required: 'notrequired' }<span class="pl-pds">"</span></span> <span class="pl-e">async-validator-options</span>=<span class="pl-s"><span class="pl-pds">"</span>{ ok: true }<span class="pl-pds">"</span></span>&gt;
+    &lt;<span class="pl-ent">input</span>
+        <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>tel<span class="pl-pds">"</span></span>
+        <span class="pl-e">ng-model</span><span class="pl-s"><span class="pl-pds">"</span>ctrl.data.street<span class="pl-pds">"</span></span>
+        <span class="pl-e">async-validator-add</span>
+        &gt;
+
+    &lt;<span class="pl-ent">input</span>
+        <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>
+        <span class="pl-e">ng-model</span><span class="pl-s"><span class="pl-pds">"</span>ctrl.data.number<span class="pl-pds">"</span></span>
+        <span class="pl-e">async-validator-add</span>
+        &gt;
+
+    &lt;<span class="pl-ent">input</span>
+        <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>
+        <span class="pl-e">ng-model</span><span class="pl-s"><span class="pl-pds">"</span>ctrl.data.complement<span class="pl-pds">"</span></span>
+        <span class="pl-e">async-validator-exclude</span>
+        &gt;
+
+  &lt;/<span class="pl-ent">div</span>&gt;
 &lt;/<span class="pl-ent">form</span>&gt;</pre></div>
 
 <h2>
@@ -264,7 +286,6 @@ module that does it's job well without all the bells and whistles.</p>
 <p>When registering a validator, you can pass your own options to it using the third parameter as an object and setting the <code>options</code> member.</p>
 
 <ul>
-<li><p><code>valueFrom</code> where to get the current value. Defaults to <code>false</code>, and passes the whole ngModelController to the validator function as the first parameter. You can set to model properties like <code>$viewValue</code>, <code>$modelValue</code>, <code>$$lastCommittedViewValue</code>, <code>$$rawModelValue</code>, etc</p></li>
 <li><p><code>options</code> any options that the validator function receives as the second parameter, defaults to <code>{}</code></p></li>
 <li><p><code>overwrite</code> if you set to false, it will throw if there's another validator with same name, defaults to <code>true</code></p></li>
 <li><p><code>removeSync</code> removes synchronous validators if they have the same name as your registered validator, defaults to <code>true</code>. Eg: using <code>&lt;input ng-model="model" required async-validator="'required'"&gt;</code> will delete the default <code>required</code> validator</p></li>
