@@ -42,8 +42,8 @@ angular.module('yourapp', [
   // register new reusable validation
   .register('name', ['SomeHttpService', function(SomeHttpService){
     // treat your validator like a service
-    return function(model, options){ // receives the full blown ngModelController
-      return SomeHttpService.check(model.$modelValue).then(function(returnedFromServer){
+    return function(value, options, model){ // receives the full blown ngModelController
+      return SomeHttpService.check(model.$$rawViewValue).then(function(returnedFromServer){
         if (returnedFromServer.status === 'ok') {
           return true; // returning boolean is fine, you can throw to break the validation
         }
@@ -51,8 +51,7 @@ angular.module('yourapp', [
       });
     }
   }])
-  // by default, when the validation is truthy, the final AsyncValidator.run() call will have the ngModel.$modelValue
-
+  // by default, when the validation is truthy, the final AsyncValidator.run() call will have the ngModel.$viewValue
 
   .register('required', [function(){
     return function(value, options, model){
@@ -60,8 +59,7 @@ angular.module('yourapp', [
       // model.$viewValue / model.$error etc
       return angular.isDefined(value);
     };
-  }]) // pluck it out from ngModel, using $$rawModelValue instead of $modelValue, because $modelValue might only be defined after required validation is actually called
-
+  }], { silentRejection: false })
 
   .register('usingValidateJs', [function(){
     return function(value, options){
@@ -83,9 +81,9 @@ angular.module('yourapp', [
       if (!angular.isDefined(options.to)) {
         return false;
       }
-      return angular.equals(value.$modelValue, options.to);
+      return angular.equals(value, options.to);
     };
-  })
+  }, { removeSync: true })
   ;
 
 }])
@@ -220,10 +218,16 @@ Locals available:
 * `$model` current ng-model exposed
 * `$options` current merged `async-validation-options-*`
 
-Use it in your form once and apply the same validation to all underlaying models (must name your inputs or manually add them using `async-validator-add`):
+`async-form-validator` and `async-group-validator` can apply validations and options to the children ngModels.
+
+For `async-form-validator`, every named ngModel will be automatically added. If you want to exclude one model, add the `async-validator-exclude` to the element. You can also add non-named ngModels using `async-validator-add`.
+
+For `async-group-validator`, you can use common validators for a group of ngModels, but they don't add themselves automatically like `async-form-validator` does, you need to manually add them using `async-validator-add`. `async-group-validator` has precedence over a `async-form-validator`, so you can overwrite a group inside a form.
+
+Options are also merged from top to bottom (`async-form-validator` > `async-group-validator` > `async-validator-options` > `async-validator-options-validator`)
 
 ```html
-<form async-validator-form="{ required: 'required', dummy: 'ctrl.controllerValidation($value)' }">
+<form async-form-validator="{ required: 'required', dummy: 'ctrl.controllerValidation($value)' }">
   <input
       type="email"
       name="email"
@@ -236,6 +240,8 @@ Use it in your form once and apply the same validation to all underlaying models
       async-validator-add
       >
   <!-- value will have to pass Angular internal required and our registered dummy validator -->
+
+  <!-- apply the same validator to the models in the group -->
 
   <div async-group-validator="{ required: 'notrequired' }" async-validator-options="{ ok: true }">
     <input
@@ -253,8 +259,11 @@ Use it in your form once and apply the same validation to all underlaying models
     <input
         type="text"
         ng-model"ctrl.data.complement"
+        async-validator="{ myownrequired: 'bymyown' }"
         async-validator-exclude
         >
+
+    <!-- async-validator-exclude will exclude the parent controller to add the validators to it -->
 
   </div>
 </form>
