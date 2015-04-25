@@ -51,6 +51,21 @@ or provide 1 directive for each type of validation (<code>validate-number</code>
 module that does it's job well without all the bells and whistles.</p>
 
 <h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<h3>
+<a id="npm" class="anchor" href="#npm" aria-hidden="true"><span class="octicon octicon-link"></span></a>NPM</h3>
+
+<pre><code>$ npm instal angular-async-validator --save
+</code></pre>
+
+<h3>
+<a id="bower" class="anchor" href="#bower" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bower</h3>
+
+<pre><code>$ bower install angular-async-validator --save
+</code></pre>
+
+<h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <div class="highlight highlight-js"><pre>angular.module(<span class="pl-s"><span class="pl-pds">'</span>yourapp<span class="pl-pds">'</span></span>, [
@@ -64,8 +79,8 @@ module that does it's job well without all the bells and whistles.</p>
   <span class="pl-c">// register new reusable validation</span>
   .register(<span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span>, [<span class="pl-s"><span class="pl-pds">'</span>SomeHttpService<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">SomeHttpService</span>){
     <span class="pl-c">// treat your validator like a service</span>
-    <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">model</span>, <span class="pl-smi">options</span>){ <span class="pl-c">// receives the full blown ngModelController</span>
-      <span class="pl-k">return</span> SomeHttpService.check(model.$modelValue).then(<span class="pl-k">function</span>(<span class="pl-smi">returnedFromServer</span>){
+    <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>, <span class="pl-smi">model</span>){ <span class="pl-c">// receives the full blown ngModelController</span>
+      <span class="pl-k">return</span> SomeHttpService.check(model.$$rawViewValue).then(<span class="pl-k">function</span>(<span class="pl-smi">returnedFromServer</span>){
         <span class="pl-k">if</span> (returnedFromServer.<span class="pl-c1">status</span> <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>ok<span class="pl-pds">'</span></span>) {
           <span class="pl-k">return</span> <span class="pl-c1">true</span>; <span class="pl-c">// returning boolean is fine, you can throw to break the validation</span>
         }
@@ -73,8 +88,7 @@ module that does it's job well without all the bells and whistles.</p>
       });
     }
   }])
-  <span class="pl-c">// by default, when the validation is truthy, the final AsyncValidator.run() call will have the ngModel.$modelValue</span>
-
+  <span class="pl-c">// by default, when the validation is truthy, the final AsyncValidator.run() call will have the ngModel.$viewValue</span>
 
   .register(<span class="pl-s"><span class="pl-pds">'</span>required<span class="pl-pds">'</span></span>, [<span class="pl-k">function</span>(){
     <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>, <span class="pl-smi">model</span>){
@@ -82,8 +96,7 @@ module that does it's job well without all the bells and whistles.</p>
       <span class="pl-c">// model.$viewValue / model.$error etc</span>
       <span class="pl-k">return</span> angular.isDefined(value);
     };
-  }]) <span class="pl-c">// pluck it out from ngModel, using $$rawModelValue instead of $modelValue, because $modelValue might only be defined after required validation is actually called</span>
-
+  }], { silentRejection<span class="pl-k">:</span> <span class="pl-c1">false</span> })
 
   .register(<span class="pl-s"><span class="pl-pds">'</span>usingValidateJs<span class="pl-pds">'</span></span>, [<span class="pl-k">function</span>(){
     <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>){
@@ -105,9 +118,9 @@ module that does it's job well without all the bells and whistles.</p>
       <span class="pl-k">if</span> (<span class="pl-k">!</span>angular.isDefined(options.to)) {
         <span class="pl-k">return</span> <span class="pl-c1">false</span>;
       }
-      <span class="pl-k">return</span> angular.equals(value.$modelValue, options.to);
+      <span class="pl-k">return</span> angular.equals(value, options.to);
     };
-  })
+  }, { removeSync<span class="pl-k">:</span> <span class="pl-c1">true</span> })
   ;
 
 }])
@@ -242,9 +255,15 @@ module that does it's job well without all the bells and whistles.</p>
 </li>
 </ul>
 
-<p>Use it in your form once and apply the same validation to all underlaying models (must name your inputs or manually add them using <code>async-validator-add</code>):</p>
+<p><code>async-form-validator</code> and <code>async-group-validator</code> can apply validations and options to the children ngModels.</p>
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">async-validator-form</span>=<span class="pl-s"><span class="pl-pds">"</span>{ required: 'required', dummy: 'ctrl.controllerValidation($value)' }<span class="pl-pds">"</span></span>&gt;
+<p>For <code>async-form-validator</code>, every named ngModel will be automatically added. If you want to exclude one model, add the <code>async-validator-exclude</code> to the element. You can also add non-named ngModels using <code>async-validator-add</code>.</p>
+
+<p>For <code>async-group-validator</code>, you can use common validators for a group of ngModels, but they don't add themselves automatically like <code>async-form-validator</code> does, you need to manually add them using <code>async-validator-add</code>. <code>async-group-validator</code> has precedence over a <code>async-form-validator</code>, so you can overwrite a group inside a form.</p>
+
+<p>Options are also merged from top to bottom (<code>async-form-validator</code> &gt; <code>async-group-validator</code> &gt; <code>async-validator-options</code> &gt; <code>async-validator-options-validator</code>)</p>
+
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">async-form-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>{ required: 'required', dummy: 'ctrl.controllerValidation($value)' }<span class="pl-pds">"</span></span>&gt;
   &lt;<span class="pl-ent">input</span>
       <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>
       <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>
@@ -257,6 +276,8 @@ module that does it's job well without all the bells and whistles.</p>
       <span class="pl-e">async-validator-add</span>
       &gt;
   <span class="pl-c">&lt;!-- value will have to pass Angular internal required and our registered dummy validator --&gt;</span>
+
+  <span class="pl-c">&lt;!-- apply the same validator to the models in the group --&gt;</span>
 
   &lt;<span class="pl-ent">div</span> <span class="pl-e">async-group-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>{ required: 'notrequired' }<span class="pl-pds">"</span></span> <span class="pl-e">async-validator-options</span>=<span class="pl-s"><span class="pl-pds">"</span>{ ok: true }<span class="pl-pds">"</span></span>&gt;
     &lt;<span class="pl-ent">input</span>
@@ -274,8 +295,11 @@ module that does it's job well without all the bells and whistles.</p>
     &lt;<span class="pl-ent">input</span>
         <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span>
         <span class="pl-e">ng-model</span><span class="pl-s"><span class="pl-pds">"</span>ctrl.data.complement<span class="pl-pds">"</span></span>
+        <span class="pl-e">async-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>{ myownrequired: 'bymyown' }<span class="pl-pds">"</span></span>
         <span class="pl-e">async-validator-exclude</span>
         &gt;
+
+    <span class="pl-c">&lt;!-- async-validator-exclude will exclude the parent controller to add the validators to it --&gt;</span>
 
   &lt;/<span class="pl-ent">div</span>&gt;
 &lt;/<span class="pl-ent">form</span>&gt;</pre></div>
