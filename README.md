@@ -16,7 +16,7 @@ This module requires Angular 1.3+, and has no dependencies other than Angular it
 
 It also supports 3rd party promise libraries such as RSVP, Q, Bluebird, etc.
 
-[DEMO](http://plnkr.co/edit/jIhkAPShgK4ggRYN4N1S?p=preview)
+[DEMO](http://embed.plnkr.co/oFVFE7/preview)
 
 ## Motivation
 
