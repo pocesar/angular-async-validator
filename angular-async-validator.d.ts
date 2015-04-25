@@ -1,6 +1,6 @@
 declare module AsyncValidator {
     interface IValidationFn {
-        (value: string | angular.INgModelController, options?: any): boolean | angular.IPromise<any>;
+        (value: string | angular.INgModelController, options?: any, model?: angular.INgModelController): boolean | angular.IPromise<any>;
     }
     type IValidateFactory = Function | Array<string | Function>;
     interface IValidationRegistered {
@@ -12,7 +12,6 @@ declare module AsyncValidator {
         [index: string]: IValidationRegistered;
     }
     interface IOptions {
-        valueFrom?: boolean | string;
         options?: any;
         overwrite?: boolean;
         removeSync?: boolean;
@@ -21,7 +20,7 @@ declare module AsyncValidator {
     }
     module Services {
         class AsyncValidator {
-            run: <T>(name: string, value: T, options?: any, returnValue?: boolean) => angular.IPromise<T>;
+            run: <T>(name: string, value: T, options?: any, model?: angular.INgModelController, returnValue?: boolean) => angular.IPromise<T>;
             options: (name: string) => IOptions;
             validator: (name: string) => IValidationFn;
             constructor($injector: angular.auto.IInjectorService, provider: Providers.AsyncValidatorProvider);

@@ -1,7 +1,7 @@
 {
   "name": "angular-async-validator",
-  "version": "0.2.2",
-  "description": "This module enables you to register your own validation rules, or overwrite existing ones. Makes every validation 'promise based', so it can deal with both synchronous  and asynchronous validations. Also, sometimes you want validate an entire form when a model changes, which currently there are no good ways to do this, hence this module, because validation and form manipulation in Angular 1.x is a pain by itself.",
+  "version": "1.0.0",
+  "description": "Makes Angular models async validation a little less painful.",
   "main": "index.js",
   "scripts": {
     "test": "karma start tests/karma.conf.js",

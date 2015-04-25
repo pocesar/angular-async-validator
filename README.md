@@ -55,11 +55,12 @@ angular.module('yourapp', [
 
 
   .register('required', [function(){
-    return function(value, options){
+    return function(value, options, model){
       // options === {}
+      // model.$viewValue / model.$error etc
       return angular.isDefined(value);
     };
-  }], { valueFrom: '$$rawModelValue' }) // pluck it out from ngModel, using $$rawModelValue instead of $modelValue, because $modelValue might only be defined after required validation is actually called
+  }]) // pluck it out from ngModel, using $$rawModelValue instead of $modelValue, because $modelValue might only be defined after required validation is actually called
 
 
   .register('usingValidateJs', [function(){
@@ -75,7 +76,7 @@ angular.module('yourapp', [
         format: /1910-100/
       });
     };
-  }], { valueFrom: '$viewValue', options: { someExtraOptions: true} })
+  }], { options: { someExtraOptions: true} })
 
   register('equals', function(){
     return function(value, options) {
@@ -235,14 +236,33 @@ Use it in your form once and apply the same validation to all underlaying models
       async-validator-add
       >
   <!-- value will have to pass Angular internal required and our registered dummy validator -->
+
+  <div async-group-validator="{ required: 'notrequired' }" async-validator-options="{ ok: true }">
+    <input
+        type="tel"
+        ng-model"ctrl.data.street"
+        async-validator-add
+        >
+
+    <input
+        type="text"
+        ng-model"ctrl.data.number"
+        async-validator-add
+        >
+
+    <input
+        type="text"
+        ng-model"ctrl.data.complement"
+        async-validator-exclude
+        >
+
+  </div>
 </form>
 ```
 
 ## Options
 
 When registering a validator, you can pass your own options to it using the third parameter as an object and setting the `options` member.
-
-* `valueFrom` where to get the current value. Defaults to `false`, and passes the whole ngModelController to the validator function as the first parameter. You can set to model properties like `$viewValue`, `$modelValue`, `$$lastCommittedViewValue`, `$$rawModelValue`, etc
 
 * `options` any options that the validator function receives as the second parameter, defaults to `{}`
 

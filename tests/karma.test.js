@@ -333,22 +333,6 @@ describe('AsyncValidator', function () {
             $scope.$digest();
         });
 
-        it('can recover from bad valueFrom', function(){
-            var invalidSpy = sinon.stub().returns(true);;
-
-            Provider.register('invalidFrom', function(){
-                return invalidSpy;
-            }, { valueFrom: 'nope' });
-
-            var
-                el = input('<input ng-model="data.n2"  async-validator="\'invalidFrom\'" />');
-
-            el.compiled($scope);
-            $scope.$digest();
-
-            expect(invalidSpy.args[0][0]).to.be.equal($scope.data.n2);
-        });
-
         it('can handle rejections inside scope functions', function(){
             var invalidSpy = sinon.stub().returns($q.reject(new Error('uhoh')));
 
@@ -470,9 +454,48 @@ describe('AsyncValidator', function () {
                 expect($scope['ok'].args[0]).to.deep.equal([$scope.data.n4, {hola: true}]);
                 expect($scope['ok'].args[1]).to.deep.equal([$scope.data.n5, {}]);
 
+                var el = input('<input ng-model="data.n5" async-validator-add>');
+
+                el.compiled($scope);
+                $scope.$digest();
+
+                var el = input('<div async-group-validator="{ dummy: \'ok()\' }"><input ng-model="data.n5" async-validator-add></div>');
+
+                el.compiled($scope);
+                $scope.$digest();
+
+                expect(el.el.find('input').controller('ngModel')).to.have.deep.property('$$success.dummy', true);
+
                 $scope.$destroy();
             });
 
+        });
+
+        describe('async-group-validator', function(){
+
+            it('works like async-form-validator but for any element', function(){
+                var el = input('<div async-group-validator><input ng-model="data.n6" async-validator-add></div>');
+            });
+
+            it('takes precedence over async-form-validator', function(){
+                var spy = sinon.stub().returns(false);
+
+                Provider.register('gimme', function(){
+                    return spy;
+                });
+
+                var el = input('<form async-form-validator="\'gimme\'" async-validator-options="{ options: true }"><div async-group-validator="{ heh: \'gimme\' }" async-validator-options="{ options: false }"><input ng-model="data.n6" name="n6" async-validator-add></div></form>');
+                el.compiled($scope);
+                $scope.$digest();
+
+                var inputModel = el.el.find('input').controller('ngModel');
+
+                expect(inputModel).to.have.deep.property('$error.heh', true);
+                expect(inputModel).to.not.have.deep.property('$error.gimme');
+                expect(inputModel).to.have.deep.property('$modelValue', undefined);
+                expect(spy.args[0][0]).to.equal($scope.data.n6);
+                expect(spy.args[0][1]).to.deep.equal({ options: false });
+            });
         });
 
         describe('async-validator-options', function(){
@@ -481,17 +504,17 @@ describe('AsyncValidator', function () {
                 var spy = sinon.spy();
 
                 Provider.register('dummy', function(){
-                    return function(value, options){
+                    return function(value, options, model){
                         spy({value: value, options: options});
                         return true;
                     };
-                }, { valueFrom: '$modelValue' });
+                });
 
                 var el = input('<input ng-model="data.n2" async-validator="{notdummy:\'dummy\'}" async-validator-options="{to: data.n3}">');
                 el.compiled($scope);
                 $scope.$digest();
 
-                expect(spy.getCall(0).args[0]).to.deep.equal({value: $scope.data.n2, options: { to: $scope.data.n3 } });
+                expect(spy.args[0][0]).to.deep.equal({value: $scope.data.n2, options: { to: $scope.data.n3 } });
                 expect(el.controller()).to.have.deep.property('$$success.notdummy', true);
 
                 spy.reset();
@@ -507,42 +530,64 @@ describe('AsyncValidator', function () {
                 var spy = sinon.stub().returns(true);
                 Provider.register('dummy', function(){
                     return spy;
-                }, { valueFrom: '$viewValue' });
+                });
 
                 var el = input('<input ng-model="data.n2" async-validator="{notdummy:\'dummy\'}" async-validator-options="{to: 1}" async-validator-options-notdummy="{to: 2}" async-validator-options-dummy="{to: 3}">');
                 el.compiled($scope);
                 $scope.$digest();
 
-                expect(spy.args[0]).to.be.deep.equal([$scope.data.n2, { to: 3 }]);
+                expect(spy.args[0]).to.be.deep.equal([$scope.data.n2, { to: 3 }, el.controller()]);
             });
 
             it('should merge all available options', function(){
                 var spy = sinon.stub().returns(true);
                 Provider.register('dummy', function(){
                     return spy;
-                }, { valueFrom: '$viewValue' });
+                });
 
                 var el = input('<input ng-model="data.n2" async-validator="{notdummy:\'dummy\'}" async-validator-options="{one: 1}" async-validator-options-notdummy="{two: 2}" async-validator-options-dummy="{three: 3}">');
                 el.compiled($scope);
                 $scope.$digest();
 
-                expect(spy.args[0]).to.be.deep.equal([$scope.data.n2, { one: 1, two: 2, three: 3 }]);
+                expect(spy.args[0]).to.be.deep.equal([$scope.data.n2, { one: 1, two: 2, three: 3 }, el.controller()]);
             });
 
             it('should merge all available options that applies', function(){
-                var spy = sinon.stub().returns(true);
+                var
+                    dummies = sinon.stub().returns(true),
+                    fines = sinon.stub().returns(true);
                 Provider.register('dummy', function(){
-                    return spy;
-                }, { valueFrom: '$viewValue' });
+                    return dummies;
+                });
                 Provider.register('fine', function(){
-                    return spy;
-                }, { valueFrom: '$viewValue' });
+                    return fines;
+                });
 
                 var el = input('<input ng-model="data.n2" async-validator="{notdummy:\'dummy\', ok: \'fine\'}" async-validator-options="{one: 1}" async-validator-options-nope="{two: 2}" async-validator-options-dummy="{three: 3}">');
                 el.compiled($scope);
                 $scope.$digest();
 
-                expect(spy.args[0]).to.be.deep.equal([$scope.data.n2, { one: 1, three: 3 }]);
+                expect(dummies.args[0]).to.be.deep.equal([$scope.data.n2, { one: 1, three: 3 }, el.controller()]);
+                expect(fines.args[0]).to.be.deep.equal([$scope.data.n2, { one: 1 }, el.controller()]);
+
+                expect(el.controller()).to.be.have.deep.property('$$success.notdummy', true);
+                expect(el.controller()).to.have.deep.property('$$success.ok', true);
+
+                dummies.reset();
+                fines.reset();
+
+                el = input('<div async-group-validator="\'fine\'" async-validator-options="{four: 4}" async-validator-options-dummy="{five: 5}"><input async-validator-add ng-model="data.n2" name="hohoho" async-validator="{notdummy:\'dummy\', ok: \'fine\'}" async-validator-options="{one: 1}" async-validator-options-nope="{two: 2}" async-validator-options-dummy="{three: 3}"></div>');
+                el.compiled($scope);
+                $scope.$digest();
+
+                expect(fines.args[0][1]).to.be.deep.equal({ one: 1 });
+                expect(fines.args[1][1]).to.be.deep.equal({ one: 1, four: 4 });
+                expect(dummies.args[0][1]).to.be.deep.equal({ one: 1, three: 3 });
+
+                var inputModel = el.el.find('input').controller('ngModel');
+                expect(inputModel).to.have.deep.property('$$success.fine', true);
+                expect(inputModel).to.have.deep.property('$$success.notdummy', true);
+                expect(inputModel).to.have.deep.property('$$success.ok', true);
             });
 
             it('ignores non object options', function(){
@@ -565,20 +610,20 @@ describe('AsyncValidator', function () {
                 var spy = sinon.spy();
 
                 Provider.register('reuseValidator', function(){
-                    return function($model, options) {
-                        spy($model.$viewValue, options.mode);
+                    return function(value, options, model) {
+                        spy(value, options.mode);
 
                         switch (options.mode) {
                             case 'number':
-                                return /^[0-9]+$/.test($model.$viewValue);
+                                return /^[0-9]+$/.test(value);
                             case 'object':
                                 try {
-                                    return angular.isObject(JSON.parse($model.$viewValue));
+                                    return angular.isObject(JSON.parse(value));
                                 } catch (e) {
                                     return false;
                                 }
                             case 'boolean':
-                                return !!$model.$viewValue;
+                                return !!value;
                         }
                         return true; // never fail the base validator
                     };
@@ -617,6 +662,32 @@ describe('AsyncValidator', function () {
                 expect(el.controller()).to.have.deep.property('$error.object', true);
             });
 
+            it('can exclude models from validations', function(){
+                Provider.register('test', function(){
+                    return sinon.stub().returns(false);
+                });
+
+                var el = input('<form async-form-validator="\'test\'"><input async-validator-exclude name="n6" ng-model="data.n6"></form>');
+                el.compiled($scope);
+                $scope.$digest();
+
+                expect(el.controller('form')).to.not.have.deep.property('$error.test');
+
+                el = input('<div async-group-validator="\'test\'"><input async-validator-exclude name="n6" ng-model="data.n6"></div>');
+                el.compiled($scope);
+                $scope.$digest();
+
+                expect(el.el.find('input').controller('ngModel')).to.not.have.deep.property('$error.test');
+
+                el = input('<form async-form-validator="\'test\'"><input name="n6" ng-model="data.n6"><input async-validator-exclude name="n7" ng-model="data.n7"></form>');
+                el.compiled($scope);
+                $scope.$digest();
+
+                expect(el.controller('form').n6).to.have.deep.property('$error.test', true);
+                expect(el.controller('form').n7).to.not.have.deep.property('$error.test');
+
+                $scope.$destroy();
+            });
 
         });
     });
