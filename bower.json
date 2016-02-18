@@ -20,8 +20,8 @@
     "directive",
     "module"
   ],
-  "description": "This module enables you to register your own validation rules, or overwrite existing ones. Makes every validation 'promise based', so it can deal with both synchronous  and asynchronous validations. Also, sometimes you want validate an entire form when a model changes, which currently there are no good ways to do this, hence this module, because validation and form manipulation in Angular 1.x is a pain by itself.",
-  "main": "angular-async-validator.umd.js",
+  "description": "This module enables you to register your own validation rules, or overwrite existing ones. Makes every validation 'promise based', so it can deal with both synchronous  and asynchronous validations. Also, sometimes you want validate an entire form when a model changes.",
+  "main": "./angular-async-validator.umd.js",
   "license": "MIT",
   "ignore": [
     "**/.*",

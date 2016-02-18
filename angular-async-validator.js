@@ -1,35 +1,44 @@
-var AsyncValidator;
-(function (_AsyncValidator) {
+(function (factory) {
+    if (typeof module === 'object' && typeof module.exports === 'object') {
+        var v = factory(require, exports); if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === 'function' && define.amd) {
+        define(["require", "exports"], factory);
+    }
+    else {
+        factory(void 0, {});
+    }
+})(function (require, exports) {
     'use strict';
     var Services;
     (function (Services) {
         var AsyncValidator = (function () {
-            function AsyncValidator($injector, provider) {
-                var $q = $injector.get('$q');
+            function AsyncValidator($injector, provider, $q) {
                 angular.forEach(provider.validations, function (validator) {
                     validator.validator = $injector.invoke(validator.factoryFn);
                 });
                 this.run = function (name, value, options, model, returnValue) {
                     if (typeof provider.validations[name] === 'undefined' || typeof provider.validations[name].validator !== 'function') {
-                        return $q.reject("" + name + " isn't a registered async validator");
+                        return $q.reject(new Error(name + " isn't a registered async validator"));
                     }
                     options = angular.extend({}, provider.validations[name].options.options, options);
-                    return new $q(function asyncValidatorRunResolver(resolve) {
-                        resolve(provider.validations[name].validator(value, options, model));
-                    }).then(function asyncValidatorResolved(result) {
+                    return $q.when(provider.validations[name].validator(value, options, model)).then(function asyncValidatorResolved(result) {
                         if (!!result) {
-                            return returnValue === false ? true : value;
+                            return returnValue === false ? true : (value === undefined ? true : value);
                         }
-                        return $q.reject();
+                        return $q.reject(new Error());
                     }, function asyncValidatorRejected(e) {
                         if (provider.validations[name].options.silentRejection) {
-                            return $q.reject(e);
+                            return $q.reject(e instanceof Error);
                         }
-                        if (angular.isString(e)) {
+                        if (e && angular.isString(e)) {
                             throw new Error(e);
                         }
-                        else {
+                        else if (e && e instanceof Error) {
                             throw e;
+                        }
+                        else {
+                            return $q.reject(new Error(e));
                         }
                     });
                 };
@@ -48,14 +57,14 @@ var AsyncValidator;
             }
             AsyncValidator.instance = function (provider) {
                 var _this = this;
-                return ['$injector', function ($injector) {
-                    return new _this($injector, provider);
-                }];
+                return ['$injector', '$q', function ($injector, $q) {
+                        return new _this($injector, provider, $q);
+                    }];
             };
             return AsyncValidator;
         })();
         Services.AsyncValidator = AsyncValidator;
-    })(Services = _AsyncValidator.Services || (_AsyncValidator.Services = {}));
+    })(Services = exports.Services || (exports.Services = {}));
     var Providers;
     (function (Providers) {
         var AsyncValidatorProvider = (function () {
@@ -65,7 +74,7 @@ var AsyncValidator;
                     options: {},
                     overwrite: true,
                     removeSync: true,
-                    silentRejection: true,
+                    silentRejection: false,
                     returnValue: true
                 };
                 this.$get = Services.AsyncValidator.instance(this);
@@ -89,7 +98,7 @@ var AsyncValidator;
             return AsyncValidatorProvider;
         })();
         Providers.AsyncValidatorProvider = AsyncValidatorProvider;
-    })(Providers = _AsyncValidator.Providers || (_AsyncValidator.Providers = {}));
+    })(Providers = exports.Providers || (exports.Providers = {}));
     var Controllers;
     (function (Controllers) {
         var AsyncForm = (function () {
@@ -235,19 +244,22 @@ var AsyncValidator;
                             if (!!result) {
                                 return true;
                             }
-                            return $q.reject();
-                        }, function (err) {
-                            return $q.reject(err);
+                            return $q.reject(new Error());
                         });
                     }
                 };
+                scope.$on('$destroy', function () {
+                    if (typeof ctrl.$asyncValidators[key] !== 'undefined') {
+                        delete ctrl.$asyncValidators[key];
+                    }
+                });
                 if (opts.removeSync) {
                     if (typeof ctrl.$validators[key] !== 'undefined') {
                         delete ctrl.$validators[key];
                     }
                 }
-                ctrl.$validate();
             });
+            ctrl.$validate();
         }
         var AsyncFormValidator = (function () {
             function AsyncFormValidator(AsyncValidator, $q) {
@@ -387,7 +399,6 @@ var AsyncValidator;
                         watchValues(scope.$eval(attrs['asyncValidatorWatch']));
                     }
                     scope.$on('$destroy', function () {
-                        ctrl.$asyncValidators = {};
                         angular.forEach(watches, function (w) {
                             w();
                         });
@@ -402,6 +413,9 @@ var AsyncValidator;
         })();
         Directives.asyncValidator = AsyncValidator.instance();
     })(Directives || (Directives = {}));
-    angular.module('AsyncValidator', []).directive(Directives).provider('AsyncValidator', Providers.AsyncValidatorProvider.instance());
-})(AsyncValidator || (AsyncValidator = {}));
-module.exports = AsyncValidator;
+    angular
+        .module('AsyncValidator', [])
+        .directive(Directives)
+        .provider('AsyncValidator', Providers.AsyncValidatorProvider.instance());
+});
+//# sourceMappingURL=angular-async-validator.js.map

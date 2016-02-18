@@ -141,7 +141,7 @@ describe('AsyncValidator', function () {
                 }
             });
 
-            AsyncValidator = $injector.get('AsyncValidator');
+            var AsyncValidator = $injector.get('AsyncValidator');
 
             AsyncValidator.run('dummy', 'test')
             .then(function(){
@@ -160,30 +160,30 @@ describe('AsyncValidator', function () {
                 return AsyncValidator.run('doesntExist', 'test');
             })
             .catch(function(err){
-                expect(err).to.match(/^doesntExist/);
+                expect(err.message).to.match(/^doesntExist/);
             })
             .then(function(){
                 return AsyncValidator.run('wontcrash', 'test');
             })
             .catch(function(err){
-                expect(err).to.match(/nope/);
+                expect(err.message).to.match(/nope/);
                 return AsyncValidator.run('willcrash','test');
             })
             .catch(function(err) {
-                expect($exceptionHandler.fn.args[0][0]).to.match(/nope/);
+                expect($exceptionHandler.fn.args[0][0].message).to.match(/nope/);
                 return AsyncValidator.run('forcereject','test');
             })
             .catch(function(err){
                 return AsyncValidator.run('forcesilencereject','test');
             })
             .catch(function(err){
-                expect(err).to.match(/ok/);
+                expect(err.message).to.match(/ok/);
                 return AsyncValidator.run('rejectionError');
             })
             .catch(function(err){
-                expect($exceptionHandler.fn.callCount).to.equal(4);
-                expect($exceptionHandler.fn.args[2][0]).to.match(/ok/);
-                expect($exceptionHandler.fn.args[3][0]).to.match(/oh my/);
+                expect($exceptionHandler.fn.callCount).to.equal(5);
+                expect($exceptionHandler.fn.args[2][0].message).to.match(/ok/);
+                expect($exceptionHandler.fn.args[3][0].message).to.match(/ok/);
                 done();
             });
 
