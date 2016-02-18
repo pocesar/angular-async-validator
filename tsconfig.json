@@ -1,11 +1,12 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "outDir": "built/",
+        "module": "umd",
+        "outDir": ".",
         "sourceMap": true,
         "target": "es5"
     },
-    "files": [
-        "angular-async-validator.ts"
+    "exclude": [
+        "bower_components/**",
+        "node_modules/**"
     ]
 }

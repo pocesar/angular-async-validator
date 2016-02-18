@@ -1,24 +1,24 @@
 {
   "name": "angular-async-validator",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Makes Angular models async validation a little less painful.",
-  "main": "index.js",
+  "main": "./angular-async-validator.js",
   "scripts": {
     "test": "karma start tests/karma.conf.js",
-    "compile": "tsc --noImplicitAny --module commonjs --target es5 --declaration typings/tsd.d.ts angular-async-validator.ts && umd AsyncValidator angular-async-validator.js --commonJS > angular-async-validator.umd.js",
     "travis": "karma start tests/karma.conf.js --single-run --browsers PhantomJS"
   },
   "devDependencies": {
-    "coveralls": "2.x",
-    "karma": "0.12.x",
-    "karma-cli": "x",
-    "mocha": "2.x",
-    "karma-coverage": "0.x",
-    "karma-mocha": "0.x",
-    "karma-phantomjs-launcher": "0.x",
-    "karma-sinon": "1.x",
-    "sinon": "1.x",
-    "umd": "3.x"
+    "coveralls": "^2.11.6",
+    "karma": "^0.13.21",
+    "karma-cli": "^0.1.2",
+    "mocha": "^2.4.5",
+    "karma-coverage": "^0.5.3",
+    "karma-mocha": "^0.2.2",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "phantomjs-prebuilt": "^2.1.4",
+    "karma-sinon": "^1.0.4",
+    "sinon": "^1.17.3",
+    "umd": "^3.0.1"
   },
   "keywords": [
     "angular",
@@ -29,6 +29,8 @@
     "directive",
     "module"
   ],
+  "browser":"./angular-async-validator.umd.js",
+  "typings":"./angular-async-validator.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/pocesar/angular-async-validator.git"
