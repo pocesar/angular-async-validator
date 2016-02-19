@@ -5,7 +5,7 @@
     <title>Angular-async-validator by pocesar</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
@@ -24,7 +24,7 @@
 <p><a href="https://nodei.co/npm/angular-async-validator/"><img src="https://nodei.co/npm/angular-async-validator.png" alt="NPM"></a></p>
 
 <h1>
-<a id="angular-async-validator" class="anchor" href="#angular-async-validator" aria-hidden="true"><span class="octicon octicon-link"></span></a>Angular Async Validator</h1>
+<a id="angular-async-validator" class="anchor" href="#angular-async-validator" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Angular Async Validator</h1>
 
 <p>This module enables you to register your own validation rules, or overwrite existing ones. Makes every validation 'promise based', so it can deal with both synchronous  and asynchronous validations. Also, sometimes you want validate an entire form when a model changes, which currently there are no good ways to do this, hence this module, because
 validation and form manipulation in Angular 1.x is a pain by itself.</p>
@@ -40,7 +40,7 @@ validation and form manipulation in Angular 1.x is a pain by itself.</p>
 <p><a href="http://embed.plnkr.co/oFVFE7/preview">DEMO</a></p>
 
 <h2>
-<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Motivation</h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Motivation</h2>
 
 <p>Current module implementations only deal with sync validations, validators set in scopes or controllers,
 or provide 1 directive for each type of validation (<code>validate-number</code>, <code>validate-presence</code>, <code>validate-stuff</code>, etc), which is an overkill.</p>
@@ -51,37 +51,37 @@ or provide 1 directive for each type of validation (<code>validate-number</code>
 module that does it's job well without all the bells and whistles.</p>
 
 <h2>
-<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install</h2>
 
 <h3>
-<a id="npm" class="anchor" href="#npm" aria-hidden="true"><span class="octicon octicon-link"></span></a>NPM</h3>
+<a id="npm" class="anchor" href="#npm" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>NPM</h3>
 
 <pre><code>$ npm instal angular-async-validator --save
 </code></pre>
 
 <h3>
-<a id="bower" class="anchor" href="#bower" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bower</h3>
+<a id="bower" class="anchor" href="#bower" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bower</h3>
 
 <pre><code>$ bower install angular-async-validator --save
 </code></pre>
 
 <h2>
-<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
 
-<div class="highlight highlight-js"><pre>angular.module(<span class="pl-s"><span class="pl-pds">'</span>yourapp<span class="pl-pds">'</span></span>, [
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">angular</span>.<span class="pl-en">module</span>(<span class="pl-s"><span class="pl-pds">'</span>yourapp<span class="pl-pds">'</span></span>, [
    <span class="pl-c">// add this module</span>
    <span class="pl-s"><span class="pl-pds">'</span>AsyncValidator<span class="pl-pds">'</span></span>
 ])
 <span class="pl-c">// Configure your validators</span>
-.config([<span class="pl-s"><span class="pl-pds">'</span>AsyncValidatorProvider<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">AsyncValidatorProvider</span>){
+.<span class="pl-en">config</span>([<span class="pl-s"><span class="pl-pds">'</span>AsyncValidatorProvider<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">AsyncValidatorProvider</span>){
 
   AsyncValidatorProvider
   <span class="pl-c">// register new reusable validation</span>
-  .register(<span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span>, [<span class="pl-s"><span class="pl-pds">'</span>SomeHttpService<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">SomeHttpService</span>){
+  .<span class="pl-en">register</span>(<span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span>, [<span class="pl-s"><span class="pl-pds">'</span>SomeHttpService<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">SomeHttpService</span>){
     <span class="pl-c">// treat your validator like a service</span>
     <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>, <span class="pl-smi">model</span>){ <span class="pl-c">// receives the full blown ngModelController</span>
-      <span class="pl-k">return</span> SomeHttpService.check(model.$$rawViewValue).then(<span class="pl-k">function</span>(<span class="pl-smi">returnedFromServer</span>){
-        <span class="pl-k">if</span> (returnedFromServer.<span class="pl-c1">status</span> <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>ok<span class="pl-pds">'</span></span>) {
+      <span class="pl-k">return</span> <span class="pl-smi">SomeHttpService</span>.<span class="pl-en">check</span>(<span class="pl-smi">model</span>.<span class="pl-smi">$$rawViewValue</span>).<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">returnedFromServer</span>){
+        <span class="pl-k">if</span> (<span class="pl-smi">returnedFromServer</span>.<span class="pl-c1">status</span> <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>ok<span class="pl-pds">'</span></span>) {
           <span class="pl-k">return</span> <span class="pl-c1">true</span>; <span class="pl-c">// returning boolean is fine, you can throw to break the validation</span>
         }
         <span class="pl-k">return</span> <span class="pl-c1">false</span>; <span class="pl-c">// may reject using $q.reject() as well, but since false will forcefully reject the validation</span>
@@ -90,20 +90,20 @@ module that does it's job well without all the bells and whistles.</p>
   }])
   <span class="pl-c">// by default, when the validation is truthy, the final AsyncValidator.run() call will have the ngModel.$viewValue</span>
 
-  .register(<span class="pl-s"><span class="pl-pds">'</span>required<span class="pl-pds">'</span></span>, [<span class="pl-k">function</span>(){
+  .<span class="pl-en">register</span>(<span class="pl-s"><span class="pl-pds">'</span>required<span class="pl-pds">'</span></span>, [<span class="pl-k">function</span>(){
     <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>, <span class="pl-smi">model</span>){
       <span class="pl-c">// options === {}</span>
       <span class="pl-c">// model.$viewValue / model.$error etc</span>
-      <span class="pl-k">return</span> angular.isDefined(value);
+      <span class="pl-k">return</span> <span class="pl-smi">angular</span>.<span class="pl-en">isDefined</span>(value);
     };
   }], { silentRejection<span class="pl-k">:</span> <span class="pl-c1">false</span> })
 
-  .register(<span class="pl-s"><span class="pl-pds">'</span>usingValidateJs<span class="pl-pds">'</span></span>, [<span class="pl-k">function</span>(){
+  .<span class="pl-en">register</span>(<span class="pl-s"><span class="pl-pds">'</span>usingValidateJs<span class="pl-pds">'</span></span>, [<span class="pl-k">function</span>(){
     <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>){
-      <span class="pl-k">if</span> (options.someExtraOptions) {
-        <span class="pl-en">console</span><span class="pl-c1">.log</span>(<span class="pl-s"><span class="pl-pds">'</span>extra options<span class="pl-pds">'</span></span>);
+      <span class="pl-k">if</span> (<span class="pl-smi">options</span>.<span class="pl-smi">someExtraOptions</span>) {
+        <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>extra options<span class="pl-pds">'</span></span>);
       }
-      <span class="pl-k">return</span> validate.single(value, {
+      <span class="pl-k">return</span> <span class="pl-smi">validate</span>.<span class="pl-en">single</span>(value, {
         presence<span class="pl-k">:</span> <span class="pl-c1">true</span>,
         length<span class="pl-k">:</span> {
           minimum<span class="pl-k">:</span> <span class="pl-c1">5</span>
@@ -113,21 +113,21 @@ module that does it's job well without all the bells and whistles.</p>
     };
   }], { options<span class="pl-k">:</span> { someExtraOptions<span class="pl-k">:</span> <span class="pl-c1">true</span>} })
 
-  register(<span class="pl-s"><span class="pl-pds">'</span>equals<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(){
+  <span class="pl-en">register</span>(<span class="pl-s"><span class="pl-pds">'</span>equals<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(){
     <span class="pl-k">return</span> <span class="pl-k">function</span>(<span class="pl-smi">value</span>, <span class="pl-smi">options</span>) {
-      <span class="pl-k">if</span> (<span class="pl-k">!</span>angular.isDefined(options.to)) {
+      <span class="pl-k">if</span> (<span class="pl-k">!</span><span class="pl-smi">angular</span>.<span class="pl-en">isDefined</span>(<span class="pl-smi">options</span>.<span class="pl-smi">to</span>)) {
         <span class="pl-k">return</span> <span class="pl-c1">false</span>;
       }
-      <span class="pl-k">return</span> angular.equals(value, options.to);
+      <span class="pl-k">return</span> <span class="pl-smi">angular</span>.<span class="pl-en">equals</span>(value, <span class="pl-smi">options</span>.<span class="pl-smi">to</span>);
     };
   }, { removeSync<span class="pl-k">:</span> <span class="pl-c1">true</span> })
   ;
 
 }])
 <span class="pl-c">// reuse validation programatically</span>
-.controller(<span class="pl-s"><span class="pl-pds">'</span>Ctrl<span class="pl-pds">'</span></span>, [<span class="pl-s"><span class="pl-pds">'</span>AsyncValidator<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">AsyncValidator</span>){
+.<span class="pl-en">controller</span>(<span class="pl-s"><span class="pl-pds">'</span>Ctrl<span class="pl-pds">'</span></span>, [<span class="pl-s"><span class="pl-pds">'</span>AsyncValidator<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">AsyncValidator</span>){
 
-  AsyncValidator.run(<span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Validate this string<span class="pl-pds">'</span></span>, { inlineOptions<span class="pl-k">:</span> <span class="pl-c1">true</span> }).then(<span class="pl-k">function</span>(<span class="pl-smi">currentValidValue</span>){
+  <span class="pl-smi">AsyncValidator</span>.<span class="pl-en">run</span>(<span class="pl-s"><span class="pl-pds">'</span>name<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Validate this string<span class="pl-pds">'</span></span>, { inlineOptions<span class="pl-k">:</span> <span class="pl-c1">true</span> }).<span class="pl-en">then</span>(<span class="pl-k">function</span>(<span class="pl-smi">currentValidValue</span>){
     <span class="pl-c">// worked</span>
     currentValidValue <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>Validate this string<span class="pl-pds">'</span></span>
   }, <span class="pl-k">function</span>(){
@@ -135,7 +135,7 @@ module that does it's job well without all the bells and whistles.</p>
 
   });
 
-  <span class="pl-c1">this</span>.<span class="pl-en">controllerValidation</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">$value</span>){
+  <span class="pl-v">this</span>.<span class="pl-smi">controllerValidation</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">$value</span>){
      <span class="pl-k">return</span> $value <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>asdf<span class="pl-pds">'</span></span>;
   };
 
@@ -151,12 +151,12 @@ module that does it's job well without all the bells and whistles.</p>
       ok<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>ok<span class="pl-pds">'</span></span>
   };
 
-  <span class="pl-v">this</span>.hasChanged <span class="pl-k">=</span> <span class="pl-c1">false</span>;
+  <span class="pl-v">this</span>.<span class="pl-smi">hasChanged</span> <span class="pl-k">=</span> <span class="pl-c1">false</span>;
 }]);</pre></div>
 
 <p>Use it in your HTML input ng-models (notice they are all expressions, therefore need to be a string):</p>
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">ng-controller</span>=<span class="pl-s"><span class="pl-pds">"</span>Ctrl as ctrl<span class="pl-pds">"</span></span>&gt;
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">ng-controller</span>=<span class="pl-s"><span class="pl-pds">"</span>Ctrl as ctrl<span class="pl-pds">"</span></span>&gt;
 
    &lt;<span class="pl-ent">input</span>
       <span class="pl-e">async-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>{ required: 'required' }<span class="pl-pds">"</span></span>
@@ -210,7 +210,7 @@ module that does it's job well without all the bells and whistles.</p>
 
 <p>The helper attribute <code>async-validator-watch</code> can watch an expression. If it changes (regardless if truthy or falsy) will trigger the <code>$validate()</code> call on the ngModel.</p>
 
-<div class="highlight highlight-html"><pre>   &lt;<span class="pl-ent">input</span>
+<div class="highlight highlight-text-html-basic"><pre>   &lt;<span class="pl-ent">input</span>
       <span class="pl-e">async-validator-watch</span>=<span class="pl-s"><span class="pl-pds">"</span>'ctrl.hasChanged'<span class="pl-pds">"</span></span>
       <span class="pl-e">async-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>'$model.$viewValue != ctrl.data.value'<span class="pl-pds">"</span></span>
       <span class="pl-e">ng-model</span>=<span class="pl-s"><span class="pl-pds">"</span>data.n6<span class="pl-pds">"</span></span>
@@ -233,7 +233,7 @@ module that does it's job well without all the bells and whistles.</p>
 
 <p>The options goes to the least specific and get merged as it becomes more specific. For example:</p>
 
-<div class="highlight highlight-html"><pre>  &lt;<span class="pl-ent">input</span>
+<div class="highlight highlight-text-html-basic"><pre>  &lt;<span class="pl-ent">input</span>
     <span class="pl-e">async-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>['required','specific']<span class="pl-pds">"</span></span>
     <span class="pl-e">async-validator-options</span>=<span class="pl-s"><span class="pl-pds">"</span>{lol: 'yes', ok: true}<span class="pl-pds">"</span></span>
     <span class="pl-e">async-validator-options-specific</span>=<span class="pl-s"><span class="pl-pds">"</span>{ok: false}<span class="pl-pds">"</span></span>
@@ -263,7 +263,7 @@ module that does it's job well without all the bells and whistles.</p>
 
 <p>Options are also merged from top to bottom (<code>async-form-validator</code> &gt; <code>async-group-validator</code> &gt; <code>async-validator-options</code> &gt; <code>async-validator-options-validator</code>)</p>
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">async-form-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>{ required: 'required', dummy: 'ctrl.controllerValidation($value)' }<span class="pl-pds">"</span></span>&gt;
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">async-form-validator</span>=<span class="pl-s"><span class="pl-pds">"</span>{ required: 'required', dummy: 'ctrl.controllerValidation($value)' }<span class="pl-pds">"</span></span>&gt;
   &lt;<span class="pl-ent">input</span>
       <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>
       <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>email<span class="pl-pds">"</span></span>
@@ -305,7 +305,7 @@ module that does it's job well without all the bells and whistles.</p>
 &lt;/<span class="pl-ent">form</span>&gt;</pre></div>
 
 <h2>
-<a id="options" class="anchor" href="#options" aria-hidden="true"><span class="octicon octicon-link"></span></a>Options</h2>
+<a id="options" class="anchor" href="#options" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Options</h2>
 
 <p>When registering a validator, you can pass your own options to it using the third parameter as an object and setting the <code>options</code> member.</p>
 
@@ -317,7 +317,7 @@ module that does it's job well without all the bells and whistles.</p>
 </ul>
 
 <h2>
-<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
 
 <p>MIT</p>
 
@@ -342,4 +342,3 @@ module that does it's job well without all the bells and whistles.</p>
 
   </body>
 </html>
-
