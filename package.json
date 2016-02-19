@@ -1,6 +1,6 @@
 {
   "name": "angular-async-validator",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Makes Angular models async validation a little less painful.",
   "main": "./angular-async-validator.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "directive",
     "module"
   ],
-  "browser":"./angular-async-validator.umd.js",
+  "browser":"./angular-async-validator.js",
   "typings":"./angular-async-validator.d.ts",
   "repository": {
     "type": "git",
