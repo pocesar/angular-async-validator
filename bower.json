@@ -21,7 +21,7 @@
     "module"
   ],
   "description": "This module enables you to register your own validation rules, or overwrite existing ones. Makes every validation 'promise based', so it can deal with both synchronous  and asynchronous validations. Also, sometimes you want validate an entire form when a model changes.",
-  "main": "./angular-async-validator.umd.js",
+  "main": "./angular-async-validator.js",
   "license": "MIT",
   "ignore": [
     "**/.*",
